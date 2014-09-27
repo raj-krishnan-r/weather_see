@@ -1,0 +1,198 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Weather See</title>
+<script src="ajax_1_10_2.js"></script>
+<script>
+var init=0;
+var a = new Array();
+function prep()
+{
+	document.getElementById('infopart').style.height=(window.innerHeight-90)+'px';
+	var w = document.getElementById('full');
+	w.addEventListener("keydown",function(f)
+	{
+		if(f.keyCode ===37)
+		travel();
+	});
+	var wage = document.getElementById("place");
+wage.addEventListener("keydown", function (e) {
+    if (e.keyCode === 13) {
+grab();
+    }
+});
+
+function validate(e) {
+    alert('Validated');
+}
+}
+function grab()
+{
+	var place = document.getElementById('place').value;
+	document.getElementById('loading').style.display='block';
+		$.get('http://api.openweathermap.org/data/2.5/weather?q='+place,function(data,success)
+	{
+		document.getElementById('loading').style.display='none';
+		var js = data;
+		document.getElementById('desc').innerHTML=capitalise(js.weather[0].description);
+		document.getElementById('temp').innerHTML=Math.round(js.main.temp-273.15)+'°C';
+		document.getElementById('humidity').innerHTML=js.main.humidity+' % ';
+		document.getElementById('placetitle').innerHTML=capitalise(place)+','+js.sys.country;
+		document.getElementById('wspeed').innerHTML=js.wind.speed+' meter/second';
+		exh(js.weather[0].main);
+		list(place);
+		
+
+	
+});
+function exh(s)
+{
+	document.getElementById('condition').innerHTML=s;
+	selectall('place');
+	if(s=='Rain')
+	{
+		document.getElementById('infopart').style.backgroundImage='url(theme/rainfall.jpg)';
+	}
+	if(s=='Clear')
+	{
+		document.getElementById('infopart').style.backgroundImage='url(theme/clear.jpg)';
+	}
+	if(s=='Clouds')
+	{
+		document.getElementById('infopart').style.backgroundImage='url(theme/clouds.jpg)';
+	}
+		if(s=='Mist')
+	{
+		document.getElementById('infopart').style.backgroundImage='url(theme/mist.jpg)';
+	}
+	if(s=='Haze')
+	{
+		document.getElementById('infopart').style.backgroundImage='url(theme/haze.jpg)';
+	}
+}
+function capitalise(string)
+{
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+function list(place)
+{
+	a[init++]=place;
+}
+function travel()
+{
+document.getElementById('place').value=a[--init];grab();
+}
+}
+function selectall(id)
+{
+	document.getElementById(id).select();
+}
+</script>
+<style>
+.ribbon
+{
+	position:fixed;
+	width:100%;
+	background:#06C;
+	left:0px;
+	top:0px;
+	height:80px;
+	z-index:1;
+}
+.placeinput
+{
+	width:500px;
+	height:30px;
+	font-size:30px;
+}
+.placebutton
+{
+	width:40px;
+	height:40px;
+	top:10px;
+	background:url(images/search.png);
+	cursor:pointer;
+}
+.loading
+{
+	position:absolute;
+	display:none;
+	z-index:3;
+}
+.infopart
+{
+	position:absolute;
+	background-repeat:no-repeat;
+	background-size:cover;
+	top:81px;
+	width:95%;
+	margin-left:2%;
+	margin-right:2%;
+	font-family:"Segoe UI Light", Arial, Verdana;
+	font-size:18px;
+	color:#333;
+}
+.condition
+{
+	font-family:"Segoe UI Light", Arial, Verdana;
+	font-size:30px;
+	color:#FFF;
+	text-shadow:1px 1px 1px #006699;
+}
+.desc
+{
+	font-family:"Segoe UI Light", Arial, Verdana;
+	font-size:14px;
+	color:#FFF;
+	text-shadow:1px 1px 1px #006699;
+}
+table
+{
+	font-family:"Segoe UI Light", Arial, Verdana;
+	font-size:16px;
+	color:#FFF;
+	text-shadow:1px 1px 1px #006699;
+}
+.placetitle
+{
+	font-family:"Segoe UI Light", Arial, Verdana;
+	font-size:24px;
+	color:#FFF;
+	text-shadow:1px 1px 1px #006699;
+}
+</style>
+</head>
+
+<body id="full" onload="prep()">
+<div onclick="travel()" class="ribbon">
+<center>
+<br><input onclick="selectall('place');" class="placeinput" id="place" type="text" name="place" value="Alappuzha"/><br><br>
+</center>
+</div>
+<div id="loading" class="loading"><img class="placebutton" src="images/loader.gif"></div>
+<div id="infopart" class="infopart">
+<span class="placetitle" id="placetitle"></span>
+<center><span id="condition" class="condition"></span>
+<br><br><br><span class="desc" id="desc"></span><br><br><br>
+<table>
+<tr>
+<td>Temperature</td>
+<td>&nbsp;&nbsp;</td>
+<td id="temp"></td>
+</tr>
+<tr>
+<td>Humidity</td>
+<td>&nbsp;&nbsp;</td>
+<td id="humidity"></td>
+</tr>
+<tr>
+<td>Wind Speed</td>
+<td>&nbsp;&nbsp;</td>
+<td id="wspeed"></td>
+</tr>
+</table>
+</center>
+</div>
+</body>
+</html>
